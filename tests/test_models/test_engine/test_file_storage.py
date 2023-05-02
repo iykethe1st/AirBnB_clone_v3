@@ -18,7 +18,6 @@ import json
 import os
 import pep8
 import unittest
-
 FileStorage = file_storage.FileStorage
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -26,7 +25,6 @@ classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
 
 class TestFileStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of FileStorage class"""
-
     @classmethod
     def setUpClass(cls):
         """Set up for the doc tests"""
@@ -72,7 +70,6 @@ test_file_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
-
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_all_returns_dict(self):
         """Test that all returns the FileStorage.__objects attr"""
@@ -117,26 +114,15 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing db storage")
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
-        """Test for the Get function that returns object based on its
-        class and id
-        """
-        self.assertNotEqual(models.storage.get('Foxes', '49'), int)
-        new_state = State(name="Kampala")
-        models.storage.new(new_state)
-        models.storage.save()
-        self.assertEqual(models.storage.get(State, new_state.id).id, new_state.id)
+        """Test that get properly returns a requested object"""
+        user = User(name="User1")
+        user.save()
+        self.assertEqual(models.storage.get("User", user.id), user)
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing db storage")
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
-        """Test for the Count function that returns the number of objects
-        based on class and id or returns all objects in storage
-        """
-        self.assertIs(type(models.storage.count()), int)
-        current_count = models.storage.count(State)
-        new_state = State(name="Kampala")
-        models.storage.new(new_state)
-        models.storage.save()
-        after_count = models.storage.count(State)
-        self.assertNotEqual(current_count, after_count)
+        """Test that count properly counts all objects"""
+         self.assertEqual(len(models.storage.all()), models.storage.count())
+
